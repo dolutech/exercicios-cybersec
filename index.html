@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="utf-8">
+  <title>Lab Web Vulnerável — SQLi, XSS, LFI</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body{font-family:Arial,Helvetica,sans-serif;max-width:900px;margin:20px auto;padding:0 16px}
+    h1{margin-bottom:6px}
+    fieldset{margin:14px 0;padding:10px}
+    label{display:block;margin:6px 0 4px}
+    input[type=text],input[type=password]{width:100%;padding:8px}
+    textarea{width:100%;height:90px;padding:8px}
+    button{padding:8px 14px;cursor:pointer}
+    code{background:#f4f4f4;padding:2px 6px;border-radius:4px}
+    .note{background:#fff9c4;padding:10px;border:1px solid #f0e68c}
+  </style>
+</head>
+<body>
+  <h1>Lab Web Vulnerável</h1>
+  <p class="note">
+    Ambiente exclusivamente educacional. Execute apenas em laboratório controlado.
+  </p>
+
+  <fieldset>
+    <legend>Login vulnerável (SQLi)</legend>
+    <form method="POST" action="app.php?action=login">
+      <label>Utilizador</label>
+      <input type="text" name="username" placeholder="admin">
+      <label>Senha</label>
+      <input type="password" name="password" placeholder="admin123">
+      <button type="submit">Entrar</button>
+    </form>
+    <p>Dica: teste SQLi com <code>' OR '1'='1</code></p>
+  </fieldset>
+
+  <fieldset>
+    <legend>Pesquisa vulnerável (SQLi via GET)</legend>
+    <form method="GET" action="app.php">
+      <input type="hidden" name="action" value="search">
+      <label>Query</label>
+      <input type="text" name="q" placeholder="admin">
+      <button type="submit">Pesquisar</button>
+    </form>
+    <p>Exemplo SQLmap: <code>sqlmap -u "http://127.0.0.1:8000/app.php?action=search&q=teste" --batch --dbms=SQLite</code></p>
+  </fieldset>
+
+  <fieldset>
+    <legend>Comentários vulneráveis (XSS armazenado)</legend>
+    <form method="POST" action="app.php?action=comment">
+      <label>Autor</label>
+      <input type="text" name="author" placeholder="alice">
+      <label>Comentário</label>
+      <textarea name="content" placeholder="Escreva aqui. Ex.: &lt;script&gt;alert('XSS')&lt;/script&gt;"></textarea>
+      <button type="submit">Publicar</button>
+    </form>
+    <p>Lista: <a href="app.php?action=list_comments">ver comentários</a></p>
+  </fieldset>
+
+  <fieldset>
+    <legend>Leitura de ficheiro (LFI)</legend>
+    <form method="GET" action="app.php">
+      <input type="hidden" name="action" value="view">
+      <label>Caminho do ficheiro</label>
+      <input type="text" name="file" value="app.php">
+      <button type="submit">Ver</button>
+    </form>
+    <p>Exemplos: <code>app.php</code>, <code>../../etc/hosts</code>, <code>php://filter/convert.base64-encode/resource=app.php</code></p>
+  </fieldset>
+
+  <p>Base de dados: é criada automaticamente em <code>database.db</code> com utilizador <code>admin / admin123</code>.</p>
+</body>
+</html>
